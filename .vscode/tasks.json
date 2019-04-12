@@ -1,0 +1,88 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "nvcc build .o active file [Release]",
+            "type": "shell",
+            "command": "/usr/local/cuda/bin/nvcc",
+            "args": [
+                "-ccbin",
+                "g++",
+                "-m64",
+                "-gencode",
+                "arch=compute_50, code=sm_50",
+                "--ptxas-options=-v",
+                "-lcurand",
+                "-c",
+                "main.cpp",
+                "cuda_kernel.cu",
+                "cuda_utils.cu"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "nvcc build active file [Release]",
+            "type": "shell",
+            "command": "/usr/local/cuda/bin/nvcc",
+            "args": [
+                "-ccbin",
+                "g++",
+                "-m64",
+                "-gencode",
+                "arch=compute_50, code=sm_50",
+                "-lcurand",
+                "-o",
+                "${workspaceFolder}/out/hppa-lab-4.out",
+                "main.o",
+                "cuda_kernel.o",
+                "cuda_utils.o"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "process",
+            "label": "Run program with active file's name",
+            "command": "${workspaceFolder}/out/hppa-lab-4.out",
+            "options": {
+                "cwd": "${workspaceFolder}/out"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "process",
+            "label": "Clear .o files",
+            "command": "rm",
+            "args": [
+                "${workspaceFolder}/out/${fileBasenameNoExtension}.o"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/out"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
