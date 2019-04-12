@@ -8,6 +8,7 @@
             "type": "shell",
             "command": "/usr/local/cuda/bin/nvcc",
             "args": [
+                "-std=c++14",
                 "-ccbin",
                 "g++",
                 "-m64",
@@ -17,6 +18,7 @@
                 "-lcurand",
                 "-c",
                 "main.cpp",
+                "cpu_transform.cpp",
                 "cuda_kernel.cu",
                 "cuda_utils.cu"
             ],
@@ -34,6 +36,7 @@
             "type": "shell",
             "command": "/usr/local/cuda/bin/nvcc",
             "args": [
+                "-std=c++14",
                 "-ccbin",
                 "g++",
                 "-m64",
@@ -43,6 +46,7 @@
                 "-o",
                 "${workspaceFolder}/out/hppa-lab-4.out",
                 "main.o",
+                "cpu_transform.o",
                 "cuda_kernel.o",
                 "cuda_utils.o"
             ],
@@ -59,6 +63,10 @@
             "type": "process",
             "label": "Run program with active file's name",
             "command": "${workspaceFolder}/out/hppa-lab-4.out",
+            "args": [
+                "1024",
+                "512"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/out"
             },

@@ -1,7 +1,7 @@
 {
     "files.associations": {
         "*.cu": "cpp",
-        "*.cuh": "hpp",
+        "*.cuh": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -42,7 +42,9 @@
         "hash_map": "cpp",
         "list": "cpp",
         "iomanip": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "chrono": "cpp",
+        "ratio": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
