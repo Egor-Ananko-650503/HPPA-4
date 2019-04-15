@@ -9,9 +9,9 @@ __global__ void mirror_rotate_kernel(uint* src, uint* dst,
     // Allocate shared memory for block
     __shared__ uint smem[32 * 32 * 8];
     // Shift to shared memory for current warp
-    uint* smem_ = &smem[32 * 32 * threadIdx.y];
+    uint* smem_w = &smem[32 * 32 * threadIdx.y];
 
-    // x, y for current thread on global memory relatively blocks
+    // x, y for current warp on global memory (in) relatively blocks
     dim3 src_offset{blockIdx.x * 32,
                     blockIdx.y * 32 * 8 + threadIdx.y * 32};
 
@@ -19,31 +19,39 @@ __global__ void mirror_rotate_kernel(uint* src, uint* dst,
     size_t src_idx = src_offset.y * (cols / 2) + src_offset.x;
 
     if (src_idx < length) {
-        // Shift to global memoty for current thread
-        uint* src_ = &src[src_offset.y * (cols / 2) + src_offset.x];
+        // Shift to global memory (in) for current warp
+        uint* src_w = &src[src_idx];
 
         // Load to shared memory
         for (size_t i = 0; i < 32; i++) {
-            smem_[threadIdx.x + i * 32] = src_[threadIdx.x + i * (cols / 2)];
+            smem_w[threadIdx.x + i * 32] = src_w[threadIdx.x + i * (cols / 2)];
         }
 
-        // __syncthreads();
+        __syncthreads();
 
-        // Swap 2 shorts on uint [2B_1 2B_2] -> ]2B_2 2B_1]
+        // "Unpack" array of uint to array of data_t
+        data_t* smem_d = (data_t*)&smem[0];
+
+        // x, y for current warp on shared memory
+        // relatively 32x64 (cols x rows) blocks (for transactions)
+        dim3 smem_d_offset{32 * (threadIdx.y % 2),
+                           64 * (threadIdx.y / 2)};
+        // Shift to shared memory for current warp
+        data_t* smem_d_w = &smem_d[smem_d_offset.y * 64 + smem_d_offset.x];
+
+        // x, y for current warp on global memory (out) relatively blocks
+        dim3 dst_offset{(uint)rows / 2 - 1 - blockIdx.y * 32 * (8 / 2) - (threadIdx.y / 2) * (64 / 2),
+                        (uint)cols - 1 - blockIdx.x * 64 - (threadIdx.y % 2) * 32};
+        // Shift to global memory (out) for current warp
+        uint* dst_w = &dst[dst_offset.y * (rows / 2) + dst_offset.x];
+
         for (size_t i = 0; i < 32; i++) {
-            data_t* pair = (data_t*)&smem_[threadIdx.x + i * 32];
-            data_t tmp = pair[0];
-            pair[0] = pair[1];
-            pair[1] = tmp;
+            uint tmp;
+            data_t* tmp_ptr = (data_t*)&tmp;
+            tmp_ptr[0] = smem_d_w[(64 - 1 - threadIdx.x * 2) * 64 + i];
+            tmp_ptr[1] = smem_d_w[(64 - 1 - (threadIdx.x * 2 + 1)) * 64 + i];
+            *(dst_w - (32 - 1 - threadIdx.x) - i * (rows / 2)) = tmp;
         }
-
-        uint* dst_ = &dst[src_offset.y * (cols / 2) + src_offset.x];
-
-        for (size_t i = 0; i < 32; i++) {
-            dst_[threadIdx.x + i * (cols / 2)] = smem_[threadIdx.x + i * 32];
-        }
-
-        // __syncthreads();
     }
 }
 

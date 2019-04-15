@@ -20,7 +20,8 @@
                 "main.cpp",
                 "cpu_transform.cpp",
                 "cuda_kernel.cu",
-                "cuda_utils.cu"
+                "cuda_utils.cu",
+                "--compiler-options='-fopenmp'"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -48,7 +49,8 @@
                 "main.o",
                 "cpu_transform.o",
                 "cuda_kernel.o",
-                "cuda_utils.o"
+                "cuda_utils.o",
+                "--compiler-options='-fopenmp'"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -64,8 +66,8 @@
             "label": "Run program with active file's name",
             "command": "${workspaceFolder}/out/hppa-lab-4.out",
             "args": [
-                "1024",
-                "512"
+                "16896",
+                "16896"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/out"
