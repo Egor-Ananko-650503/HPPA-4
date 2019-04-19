@@ -47,8 +47,6 @@ int main(int argc, char const *argv[]) {
     std::cout << "sib: " << size_in_bytes << std::endl;
     std::cout << "total for 2 matrix: " << float(size_in_bytes * 2) / 1024 / 1024 / 1024 << " GB" << std::endl;
 
-    // h_data_in = (data_t *)calloc(len, sizeof(data_t));
-    // h_data_out = (data_t *)calloc(len, sizeof(data_t));
     cudaMallocHost(&h_data_in, size_in_bytes);
     cudaMallocHost(&h_data_out, size_in_bytes);
     cudaMalloc(&d_data_in, size_in_bytes);
@@ -105,12 +103,6 @@ int main(int argc, char const *argv[]) {
 
     std::cout << "Errors: " << errors_count << std::endl;
 
-    std::cout << std::endl
-              << cpu_data[0] << std::endl;
-    std::cout << h_data_out[0] << std::endl;
-
-    // free(h_data_in);
-    // free(h_data_out);
     cudaFreeHost(h_data_in);
     cudaFreeHost(h_data_out);
     cudaFree(d_data_in);

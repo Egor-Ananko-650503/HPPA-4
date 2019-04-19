@@ -15,10 +15,8 @@ __global__ void mirror_rotate_kernel(uint* src, uint* dst,
     uint2 src_offset{blockIdx.x * 32,
                      blockIdx.y * 32 * 8 + threadIdx.y * 32};
 
-    // size_t length = (rows - 1) * (cols / 2);
     size_t src_idx = src_offset.y * (cols / 2) + src_offset.x;
 
-    // if (src_idx < length) {
     // Shift to global memory (in) for current warp
     uint* src_w = &src[src_idx];
 
@@ -53,7 +51,6 @@ __global__ void mirror_rotate_kernel(uint* src, uint* dst,
         tmp_ptr[1] = smem_d_w[(32 * 2 - 1 - (threadIdx.x * 2 + 1)) * 32 * 2 + i];
         *(dst_w - (32 - 1 - threadIdx.x) - i * (rows / 2)) = tmp;
     }
-    // }
 }
 
 __host__ void launch_kernel(dim3 threads_per_block,
