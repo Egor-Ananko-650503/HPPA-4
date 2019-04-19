@@ -60,7 +60,7 @@ int main(int argc, char const *argv[]) {
 
     dim3 threads_per_block{32, 8};
     dim3 num_blocks{(uint)((cols / 2 + 32 - 1) / 32),
-                    (uint)((rows + (32 * 8 - 1)) / (32 * 8))};  // TODO: change for all dims
+                    (uint)((rows + (32 * 8 - 1)) / (32 * 8))};
 
     std::cout << "Threads per block: "
               << threads_per_block.x << ' '
